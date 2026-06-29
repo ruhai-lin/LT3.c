@@ -56,7 +56,7 @@ python tinystories.py pretokenize --vocab_size=512
 
 ```bash
 torchrun --standalone --nproc_per_node=8 train.py \
-  --out_dir=outputs/climbmix15M_50B_100k \
+  --out_dir=outputs/climbmix15M \
   --dim=288 --n_layers=6 --num_heads=4 \
   --head_k_dim=72 --head_v_dim=72 --hidden_dim=768 --conv_size=4 \
   --loop_count=4 --use_residual=True \
@@ -68,7 +68,69 @@ torchrun --standalone --nproc_per_node=8 train.py \
   --eval_interval=2000 --eval_iters=100
 ```
 
-当前先只固定 15M 规模，确认只循环 GDN attention、FFN 不循环时在这个 token budget 下是否是正收益。42M/110M 建议等 15M 的 CORE 和 head stats 跑通后再按同样比例扩展 `dim/n_layers/hidden_dim/num_heads`。
+#### 42M
+```bash
+torchrun --standalone --nproc_per_node=8 train.py \
+  --out_dir=outputs/climbmix42M \
+  --dim=512 --n_layers=8 --num_heads=8 \
+  --head_k_dim=64 --head_v_dim=64 --hidden_dim=1376 --conv_size=4 \
+  --loop_count=4 --use_residual=True \
+  --max_seq_len=1024 \
+  --batch_size=32 --gradient_accumulation_steps=16 \
+  --learning_rate=5e-4 --max_iters=100000 --warmup_iters=1000 \
+  --weight_decay=0.1 --beta1=0.9 --beta2=0.95 --grad_clip=1.0 \
+  --dtype=bfloat16 --compile=False \
+  --eval_interval=2000 --eval_iters=100
+```
+#### 110M
+
+```bash
+torchrun --standalone --nproc_per_node=8 train.py \
+  --out_dir=outputs/climbmix110M \
+  --dim=768 --n_layers=12 --num_heads=12 \
+  --head_k_dim=64 --head_v_dim=64 --hidden_dim=2048 --conv_size=4 \
+  --loop_count=4 --use_residual=True \
+  --max_seq_len=1024 \
+  --batch_size=16 --gradient_accumulation_steps=32 \
+  --learning_rate=5e-4 --max_iters=100000 --warmup_iters=1000 \
+  --weight_decay=0.1 --beta1=0.9 --beta2=0.95 --grad_clip=1.0 \
+  --dtype=bfloat16 --compile=False \
+  --eval_interval=2000 --eval_iters=100
+```
+
+#### 340M
+
+```bash
+torchrun --standalone --nproc_per_node=8 train.py \
+  --out_dir=outputs/climbmix340M \
+  --dim=1024 --n_layers=21 --num_heads=6 \
+  --head_k_dim=256 --head_v_dim=512 --hidden_dim=4096 --conv_size=4 \
+  --loop_count=4 --use_residual=True \
+  --norm_eps=1e-6 \
+  --max_seq_len=4096 \
+  --batch_size=2 --gradient_accumulation_steps=64 \
+  --learning_rate=3e-4 --max_iters=200000 --warmup_iters=10000 \
+  --weight_decay=0.1 --beta1=0.9 --beta2=0.95 --grad_clip=1.0 \
+  --dtype=bfloat16 --compile=True \
+  --eval_interval=5000 --eval_iters=50
+```
+
+#### 1B
+
+```bash
+torchrun --standalone --nproc_per_node=8 train.py \
+  --out_dir=outputs/climbmix1B \
+  --dim=2048 --n_layers=21 --num_heads=6 \
+  --head_k_dim=256 --head_v_dim=512 --hidden_dim=8192 --conv_size=4 \
+  --loop_count=4 --use_residual=True \
+  --norm_eps=1e-6 \
+  --max_seq_len=4096 \
+  --batch_size=4 --gradient_accumulation_steps=32 \
+  --learning_rate=3e-4 --max_iters=200000 --warmup_iters=10000 \
+  --weight_decay=0.1 --beta1=0.9 --beta2=0.95 --grad_clip=1.0 \
+  --dtype=bfloat16 --compile=True \
+  --eval_interval=5000 --eval_iters=50
+```
 
 ---
 

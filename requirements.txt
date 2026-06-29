@@ -10,6 +10,7 @@ triton>=3.3
 transformers>=4.45.0
 einops
 flash-linear-attention
+apache-tvm-ffi==0.1.11
 tilelang>=0.1.9
 tqdm
 wandb
